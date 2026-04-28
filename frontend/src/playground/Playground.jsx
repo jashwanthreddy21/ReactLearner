@@ -343,23 +343,11 @@ window.parent.postMessage({ __src: 'js-playground', level: 'done', args: '' }, '
     return (
       <div style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
         <PanelGroup direction="vertical">
+          {/* Editor Panel */}
           <Panel defaultSize={60} minSize={20}>
             <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minWidth: 0 }}>
               <div style={{ ...HDR, background: '#1a1a1a', borderBottom: '1px solid #000' }}>
-                <div style={{ display: 'flex', gap: 12 }}>
-                  <button 
-                    onClick={() => setActiveView('editor')}
-                    style={{ background: 'none', border: 'none', color: activeView === 'editor' ? '#00ffcc' : '#666', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}
-                  >
-                    CODE
-                  </button>
-                  <button 
-                    onClick={() => setActiveView('console')}
-                    style={{ background: 'none', border: 'none', color: activeView === 'console' ? '#00ffcc' : '#666', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}
-                  >
-                    CONSOLE
-                  </button>
-                </div>
+                <span>Code Editor — JavaScript</span>
                 <button
                   style={runBtnStyle(running ? '#15803d' : '#16a34a')}
                   onClick={runCode}
@@ -368,28 +356,45 @@ window.parent.postMessage({ __src: 'js-playground', level: 'done', args: '' }, '
                   {running ? '...' : '▶ Run'}
                 </button>
               </div>
-              
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-                {activeView === 'editor' ? (
-                  <textarea
-                    value={code}
-                    onChange={e => setCode(e.target.value)}
-                    spellCheck={false}
-                    style={{
-                      flex: 1, background: '#1e1e1e', color: '#d4d4d4',
-                      fontFamily: '"Fira Code", monospace',
-                      fontSize: 13, lineHeight: 1.6, padding: '12px',
-                      border: 'none', outline: 'none', resize: 'none',
-                    }}
-                  />
-                ) : (
-                  <div style={{ flex: 1, overflow: 'auto', background: '#0d0d0d', padding: '8px 0', fontFamily: '"Fira Code", monospace', fontSize: 12 }}>
-                    {logs.filter(l => l.type !== 'done').map((log, i) => (
-                      <div key={i} style={{ padding: '3px 14px', color: logColor[log.type] || '#d4d4d4', borderBottom: '1px solid #111', whiteSpace: 'pre-wrap' }}>
-                        {log.text}
-                      </div>
-                    ))}
+              <textarea
+                value={code}
+                onChange={e => setCode(e.target.value)}
+                spellCheck={false}
+                style={{
+                  flex: 1, background: '#1e1e1e', color: '#d4d4d4',
+                  fontFamily: '"Fira Code", monospace',
+                  fontSize: 13, lineHeight: 1.6, padding: '12px',
+                  border: 'none', outline: 'none', resize: 'none',
+                }}
+              />
+            </div>
+          </Panel>
+
+          <ResizeHandle direction="vertical" />
+
+          {/* Console Panel */}
+          <Panel defaultSize={40} minSize={20}>
+            <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#0d0d0d', minWidth: 0 }}>
+              <div style={{ ...HDR, background: '#1a1a1a', borderBottom: '1px solid #000' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#4ade80', boxShadow: '0 0 6px #4ade80', display: 'inline-block' }} />
+                  Console Output
+                </span>
+                <button
+                  onClick={() => setLogs([])}
+                  style={{ background: 'none', border: 'none', color: '#6b7280', cursor: 'pointer', fontSize: 11, fontWeight: 600, padding: '2px 6px' }}
+                >
+                  Clear
+                </button>
+              </div>
+              <div style={{ flex: 1, overflow: 'auto', padding: '8px 0', fontFamily: '"Fira Code", monospace', fontSize: 12 }}>
+                {logs.filter(l => l.type !== 'done').map((log, i) => (
+                  <div key={i} style={{ padding: '3px 14px', color: logColor[log.type] || '#d4d4d4', borderBottom: '1px solid #111', whiteSpace: 'pre-wrap' }}>
+                    {log.text}
                   </div>
+                ))}
+                {logs.length === 0 && (
+                  <div style={{ padding: '10px 14px', color: '#4b5563', fontStyle: 'italic', fontSize: 12 }}>No output yet. Click ▶ Run.</div>
                 )}
               </div>
             </div>

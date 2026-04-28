@@ -16,10 +16,9 @@ const StandalonePlayground = () => {
   const [activeLang, setActiveLang] = useState('react');
   const [isMobile] = useState(window.innerWidth < 768);
 
-  const NAVBAR_HEIGHT = 65; // Estimated responsive navbar height
   const headerHeight = isMobile ? 60 : 48;
-  const assignmentBarHeight = assignment ? (isMobile ? 100 : 80) : 0;
-  const playgroundTop = NAVBAR_HEIGHT + headerHeight + (assignment ? assignmentBarHeight : 0);
+  const assignmentBarHeight = assignment ? (isMobile ? 120 : 80) : 0;
+  const playgroundTop = NAVBAR_HEIGHT + headerHeight + assignmentBarHeight;
 
   return (
     <div className="flex flex-col h-full bg-[#1e1e1e]">
