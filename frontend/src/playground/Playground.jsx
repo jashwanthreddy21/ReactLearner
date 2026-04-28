@@ -288,10 +288,10 @@ window.parent.postMessage({ __src: 'js-playground', level: 'done', args: '' }, '
 const Playground = ({ activeLang = 'react' }) => {
   useEffect(() => {
     const style = document.createElement('style');
-    style.textContent = \`
+    style.textContent = `
       .sp-wrapper { height: 100% !important; display: flex !important; flex-direction: column !important; }
       .sp-layout { height: 100% !important; flex: 1 1 auto !important; }
-    \`;
+    `;
     document.head.appendChild(style);
     return () => style.remove();
   }, []);
