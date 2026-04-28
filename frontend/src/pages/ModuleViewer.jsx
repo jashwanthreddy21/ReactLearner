@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import useProgressStore from '../store/useProgressStore';
 import useAuthStore from '../store/useAuthStore';
 import { ChevronLeft, ChevronRight, CheckCircle, Code, BookOpen, HelpCircle, Briefcase } from 'lucide-react';
-import { SandpackProvider, SandpackCodeEditor } from '@codesandbox/sandpack-react';
+
 
 const ModuleViewer = () => {
   const { id } = useParams();
@@ -135,15 +135,11 @@ const ModuleViewer = () => {
               <div className="bg-[#252526] px-4 py-2 md:py-3 flex items-center border-b border-black">
                 <span className="text-[10px] md:text-xs font-semibold uppercase tracking-wider text-slate-400">App.js</span>
               </div>
-              <div className="p-2 md:p-4">
-                <SandpackProvider 
-                  template="react" 
-                  theme="dark"
-                  files={{ "/App.js": currentModule.codeExample || "// No example provided" }}
-                >
-                  <SandpackCodeEditor readOnly showLineNumbers wrapContent style={{ minHeight: '300px', md: { minHeight: '400px' } }} />
-                </SandpackProvider>
-              </div>
+                <div className="bg-[#1e1e1e] p-4 rounded-b-xl overflow-x-auto">
+                  <pre className="font-mono text-sm text-slate-300">
+                    <code>{currentModule.codeExample || "// No example provided"}</code>
+                  </pre>
+                </div>
             </div>
           )}
 
