@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import axios from 'axios';
 import useAuthStore from './useAuthStore';
 
-const API_URL = '/api/modules/';
+const API_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api/modules/` : '/api/modules/';
 
 const useProgressStore = create((set, get) => ({
   modules: [],
