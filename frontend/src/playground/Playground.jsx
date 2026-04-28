@@ -7,6 +7,43 @@ import {
   SandpackFileExplorer,
   useSandpack,
 } from '@codesandbox/sandpack-react';
+import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
+
+// ─── Custom Resize Handle ─────────────────────────────────────────────────────
+const ResizeHandle = ({ direction = 'horizontal' }) => (
+  <PanelResizeHandle 
+    style={{
+      flex: '0 0 4px',
+      background: '#1a1a1a',
+      position: 'relative',
+      outline: 'none',
+      cursor: direction === 'horizontal' ? 'col-resize' : 'row-resize',
+      transition: 'background 0.2s',
+      zIndex: 10
+    }}
+  >
+    <div style={{
+      position: 'absolute',
+      inset: 0,
+      background: 'transparent',
+      transition: 'background 0.2s',
+    }} 
+    onMouseEnter={e => e.currentTarget.style.background = '#3b82f644'}
+    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+    />
+    <div style={{
+      position: 'absolute',
+      top: direction === 'horizontal' ? '50%' : '2px',
+      left: direction === 'horizontal' ? '2px' : '50%',
+      right: direction === 'horizontal' ? 'auto' : '2px',
+      bottom: direction === 'horizontal' ? 'auto' : '2px',
+      transform: direction === 'horizontal' ? 'translateY(-50%)' : 'translateX(-50%)',
+      width: direction === 'horizontal' ? '1px' : '30px',
+      height: direction === 'horizontal' ? '30px' : '1px',
+      background: '#334155',
+    }} />
+  </PanelResizeHandle>
+);
 
 // ─── Inject global CSS ────────────────────────────────────────────────────────
 function injectStyles() {
@@ -96,97 +133,126 @@ const ReactRunButton = () => {
 // ─── React Playground Layout ──────────────────────────────────────────────────
 const ReactLayout = () => {
   const [isMobile] = useState(window.innerWidth < 768);
-  const [activeView, setActiveView] = useState('preview'); // 'preview' or 'console'
+  const [activeView, setActiveView] = useState('preview');
 
   if (isMobile) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%', overflow: 'hidden' }}>
-        {/* Code Editor (Top half) */}
-        <div style={{ flex: '0 0 60%', display: 'flex', flexDirection: 'column', borderBottom: '1px solid #2d2d2d', minWidth: 0 }}>
-          <div style={HDR}>
-            <span>Code Editor</span>
-            <ReactRunButton />
-          </div>
-          <div style={{ flex: 1, overflow: 'hidden' }}>
-            <SandpackCodeEditor showLineNumbers showTabs closableTabs showInlineErrors wrapContent style={{ height: '100%' }} />
-          </div>
-        </div>
-
-        {/* Preview / Console Toggle (Bottom half) */}
-        <div style={{ flex: '0 0 40%', display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-          <div style={{ ...HDR, background: '#1a1a1a' }}>
-            <div style={{ display: 'flex', gap: 12 }}>
-              <button 
-                onClick={() => setActiveView('preview')}
-                style={{ background: 'none', border: 'none', color: activeView === 'preview' ? '#00ffcc' : '#666', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}
-              >
-                LIVE PREVIEW
-              </button>
-              <button 
-                onClick={() => setActiveView('console')}
-                style={{ background: 'none', border: 'none', color: activeView === 'console' ? '#00ffcc' : '#666', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}
-              >
-                CONSOLE
-              </button>
+      <div style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
+        <PanelGroup direction="vertical">
+          {/* Code Editor (Top) */}
+          <Panel defaultSize={60} minSize={20}>
+            <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minWidth: 0 }}>
+              <div style={HDR}>
+                <span>Code Editor</span>
+                <ReactRunButton />
+              </div>
+              <div style={{ flex: 1, overflow: 'hidden' }}>
+                <SandpackCodeEditor showLineNumbers showTabs closableTabs showInlineErrors wrapContent style={{ height: '100%' }} />
+              </div>
             </div>
-          </div>
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-            {activeView === 'preview' ? (
-              <div style={{ flex: 1, overflow: 'hidden', background: '#fff' }}>
-                <SandpackPreview showNavigator={false} showRefreshButton showOpenInCodeSandbox={false} style={{ height: '100%' }} />
+          </Panel>
+
+          <ResizeHandle direction="vertical" />
+
+          {/* Preview / Console Toggle (Bottom) */}
+          <Panel defaultSize={40} minSize={20}>
+            <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minWidth: 0 }}>
+              <div style={{ ...HDR, background: '#1a1a1a' }}>
+                <div style={{ display: 'flex', gap: 12 }}>
+                  <button 
+                    onClick={() => setActiveView('preview')}
+                    style={{ background: 'none', border: 'none', color: activeView === 'preview' ? '#00ffcc' : '#666', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}
+                  >
+                    LIVE PREVIEW
+                  </button>
+                  <button 
+                    onClick={() => setActiveView('console')}
+                    style={{ background: 'none', border: 'none', color: activeView === 'console' ? '#00ffcc' : '#666', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}
+                  >
+                    CONSOLE
+                  </button>
+                </div>
               </div>
-            ) : (
-              <div style={{ flex: 1, overflow: 'hidden', background: '#0d0d0d' }}>
-                <SandpackConsole showHeader={false} style={{ height: '100%', background: '#0d0d0d' }} />
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+                {activeView === 'preview' ? (
+                  <div style={{ flex: 1, overflow: 'hidden', background: '#fff' }}>
+                    <SandpackPreview showNavigator={false} showRefreshButton showOpenInCodeSandbox={false} style={{ height: '100%' }} />
+                  </div>
+                ) : (
+                  <div style={{ flex: 1, overflow: 'hidden', background: '#0d0d0d' }}>
+                    <SandpackConsole showHeader={false} style={{ height: '100%', background: '#0d0d0d' }} />
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        </div>
+            </div>
+          </Panel>
+        </PanelGroup>
       </div>
     );
   }
 
   return (
-    <div style={{ display: 'flex', width: '100%', height: '100%', overflow: 'hidden' }}>
-      {/* File Explorer */}
-      <div style={{ width: 170, display: 'flex', flexDirection: 'column', borderRight: '1px solid #2d2d2d', background: '#252526', flexShrink: 0 }}>
-        <div style={HDR}><span>Explorer</span></div>
-        <div style={{ flex: 1, overflow: 'auto' }}>
-          <SandpackFileExplorer autoHiddenFiles />
-        </div>
-      </div>
+    <div style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
+      <PanelGroup direction="horizontal">
+        {/* File Explorer */}
+        <Panel defaultSize={15} minSize={10} maxSize={30}>
+          <div style={{ display: 'flex', flexDirection: 'column', height: '100%', borderRight: '1px solid #2d2d2d', background: '#252526' }}>
+            <div style={HDR}><span>Explorer</span></div>
+            <div style={{ flex: 1, overflow: 'auto' }}>
+              <SandpackFileExplorer autoHiddenFiles />
+            </div>
+          </div>
+        </Panel>
 
-      {/* Code Editor */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', borderRight: '1px solid #2d2d2d', minWidth: 0 }}>
-        <div style={HDR}>
-          <span>Code Editor — React</span>
-          <ReactRunButton />
-        </div>
-        <div style={{ flex: 1, overflow: 'hidden' }}>
-          <SandpackCodeEditor showLineNumbers showTabs closableTabs showInlineErrors wrapContent style={{ height: '100%' }} />
-        </div>
-      </div>
+        <ResizeHandle />
 
-      {/* Preview + Console */}
-      <div style={{ width: '38%', minWidth: 280, display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
-        <div style={{ flex: '0 0 55%', display: 'flex', flexDirection: 'column', borderBottom: '1px solid #2d2d2d', minHeight: 0 }}>
-          <div style={HDR}><span>Live Preview</span></div>
-          <div style={{ flex: 1, overflow: 'hidden', background: '#fff' }}>
-            <SandpackPreview showNavigator={false} showRefreshButton showOpenInCodeSandbox={false} style={{ height: '100%' }} />
+        {/* Code Editor */}
+        <Panel defaultSize={45} minSize={20}>
+          <div style={{ display: 'flex', flexDirection: 'column', height: '100%', borderRight: '1px solid #2d2d2d', minWidth: 0 }}>
+            <div style={HDR}>
+              <span>Code Editor — React</span>
+              <ReactRunButton />
+            </div>
+            <div style={{ flex: 1, overflow: 'hidden' }}>
+              <SandpackCodeEditor showLineNumbers showTabs closableTabs showInlineErrors wrapContent style={{ height: '100%' }} />
+            </div>
           </div>
-        </div>
-        <div style={{ flex: '0 0 45%', display: 'flex', flexDirection: 'column', background: '#0d0d0d', minHeight: 0 }}>
-          <div style={{ ...HDR, background: '#1a1a1a', borderBottom: '1px solid #000' }}>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#4ade80', boxShadow: '0 0 6px #4ade80', display: 'inline-block' }} />
-              Console Output
-            </span>
+        </Panel>
+
+        <ResizeHandle />
+
+        {/* Preview + Console */}
+        <Panel defaultSize={40} minSize={20}>
+          <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minWidth: 0 }}>
+            <PanelGroup direction="vertical">
+              <Panel defaultSize={55} minSize={20}>
+                <div style={{ display: 'flex', flexDirection: 'column', height: '100%', borderBottom: '1px solid #2d2d2d', minHeight: 0 }}>
+                  <div style={HDR}><span>Live Preview</span></div>
+                  <div style={{ flex: 1, overflow: 'hidden', background: '#fff' }}>
+                    <SandpackPreview showNavigator={false} showRefreshButton showOpenInCodeSandbox={false} style={{ height: '100%' }} />
+                  </div>
+                </div>
+              </Panel>
+              
+              <ResizeHandle direction="vertical" />
+
+              <Panel defaultSize={45} minSize={20}>
+                <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#0d0d0d', minHeight: 0 }}>
+                  <div style={{ ...HDR, background: '#1a1a1a', borderBottom: '1px solid #000' }}>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#4ade80', boxShadow: '0 0 6px #4ade80', display: 'inline-block' }} />
+                      Console Output
+                    </span>
+                  </div>
+                  <div style={{ flex: 1, overflow: 'hidden' }}>
+                    <SandpackConsole showHeader={false} style={{ height: '100%', background: '#0d0d0d' }} />
+                  </div>
+                </div>
+              </Panel>
+            </PanelGroup>
           </div>
-          <div style={{ flex: 1, overflow: 'hidden' }}>
-            <SandpackConsole showHeader={false} style={{ height: '100%', background: '#0d0d0d' }} />
-          </div>
-        </div>
-      </div>
+        </Panel>
+      </PanelGroup>
     </div>
   );
 };
@@ -275,128 +341,142 @@ window.parent.postMessage({ __src: 'js-playground', level: 'done', args: '' }, '
 
   if (isMobile) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%', overflow: 'hidden' }}>
-        <div style={{ ...HDR, background: '#1a1a1a', borderBottom: '1px solid #000' }}>
-          <div style={{ display: 'flex', gap: 12 }}>
-            <button 
-              onClick={() => setActiveView('editor')}
-              style={{ background: 'none', border: 'none', color: activeView === 'editor' ? '#00ffcc' : '#666', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}
-            >
-              CODE
-            </button>
-            <button 
-              onClick={() => setActiveView('console')}
-              style={{ background: 'none', border: 'none', color: activeView === 'console' ? '#00ffcc' : '#666', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}
-            >
-              CONSOLE
-            </button>
-          </div>
-          <button
-            style={runBtnStyle(running ? '#15803d' : '#16a34a')}
-            onClick={runCode}
-            disabled={running}
-          >
-            {running ? '...' : '▶ Run'}
-          </button>
-        </div>
-        
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-          {activeView === 'editor' ? (
+      <div style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
+        <PanelGroup direction="vertical">
+          <Panel defaultSize={60} minSize={20}>
+            <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minWidth: 0 }}>
+              <div style={{ ...HDR, background: '#1a1a1a', borderBottom: '1px solid #000' }}>
+                <div style={{ display: 'flex', gap: 12 }}>
+                  <button 
+                    onClick={() => setActiveView('editor')}
+                    style={{ background: 'none', border: 'none', color: activeView === 'editor' ? '#00ffcc' : '#666', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}
+                  >
+                    CODE
+                  </button>
+                  <button 
+                    onClick={() => setActiveView('console')}
+                    style={{ background: 'none', border: 'none', color: activeView === 'console' ? '#00ffcc' : '#666', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}
+                  >
+                    CONSOLE
+                  </button>
+                </div>
+                <button
+                  style={runBtnStyle(running ? '#15803d' : '#16a34a')}
+                  onClick={runCode}
+                  disabled={running}
+                >
+                  {running ? '...' : '▶ Run'}
+                </button>
+              </div>
+              
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+                {activeView === 'editor' ? (
+                  <textarea
+                    value={code}
+                    onChange={e => setCode(e.target.value)}
+                    spellCheck={false}
+                    style={{
+                      flex: 1, background: '#1e1e1e', color: '#d4d4d4',
+                      fontFamily: '"Fira Code", monospace',
+                      fontSize: 13, lineHeight: 1.6, padding: '12px',
+                      border: 'none', outline: 'none', resize: 'none',
+                    }}
+                  />
+                ) : (
+                  <div style={{ flex: 1, overflow: 'auto', background: '#0d0d0d', padding: '8px 0', fontFamily: '"Fira Code", monospace', fontSize: 12 }}>
+                    {logs.filter(l => l.type !== 'done').map((log, i) => (
+                      <div key={i} style={{ padding: '3px 14px', color: logColor[log.type] || '#d4d4d4', borderBottom: '1px solid #111', whiteSpace: 'pre-wrap' }}>
+                        {log.text}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </Panel>
+        </PanelGroup>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
+      <PanelGroup direction="horizontal">
+        {/* Code Editor */}
+        <Panel defaultSize={60} minSize={20}>
+          <div style={{ display: 'flex', flexDirection: 'column', height: '100%', borderRight: '1px solid #2d2d2d', minWidth: 0 }}>
+            <div style={HDR}>
+              <span>Code Editor — JavaScript</span>
+              <button
+                style={runBtnStyle(running ? '#15803d' : '#16a34a')}
+                onClick={runCode}
+                disabled={running}
+              >
+                {running ? '⏳ Running...' : '▶ Run'}
+              </button>
+            </div>
             <textarea
               value={code}
               onChange={e => setCode(e.target.value)}
               spellCheck={false}
               style={{
                 flex: 1, background: '#1e1e1e', color: '#d4d4d4',
-                fontFamily: '"Fira Code", monospace',
-                fontSize: 13, lineHeight: 1.6, padding: '12px',
+                fontFamily: '"Fira Code", "Cascadia Code", "Consolas", monospace',
+                fontSize: 13, lineHeight: 1.6, padding: '12px 16px',
                 border: 'none', outline: 'none', resize: 'none',
+                tabSize: 2,
+              }}
+              onKeyDown={e => {
+                if (e.key === 'Tab') {
+                  e.preventDefault();
+                  const { selectionStart: s, selectionEnd: end } = e.target;
+                  const newCode = code.substring(0, s) + '  ' + code.substring(end);
+                  setCode(newCode);
+                  requestAnimationFrame(() => { e.target.selectionStart = e.target.selectionEnd = s + 2; });
+                }
               }}
             />
-          ) : (
-            <div style={{ flex: 1, overflow: 'auto', background: '#0d0d0d', padding: '8px 0', fontFamily: '"Fira Code", monospace', fontSize: 12 }}>
+          </div>
+        </Panel>
+
+        <ResizeHandle />
+
+        {/* Console */}
+        <Panel defaultSize={40} minSize={20}>
+          <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#0d0d0d', flexShrink: 0 }}>
+            <div style={{ ...HDR, background: '#1a1a1a', borderBottom: '1px solid #000' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#4ade80', boxShadow: '0 0 6px #4ade80', display: 'inline-block' }} />
+                Console Output
+              </span>
+              <button
+                onClick={() => setLogs([])}
+                style={{ background: 'none', border: 'none', color: '#6b7280', cursor: 'pointer', fontSize: 11, fontWeight: 600, padding: '2px 6px' }}
+              >
+                Clear
+              </button>
+            </div>
+            <div style={{ flex: 1, overflow: 'auto', padding: '8px 0', fontFamily: '"Fira Code", monospace', fontSize: 12 }}>
               {logs.filter(l => l.type !== 'done').map((log, i) => (
-                <div key={i} style={{ padding: '3px 14px', color: logColor[log.type] || '#d4d4d4', borderBottom: '1px solid #111', whiteSpace: 'pre-wrap' }}>
+                <div key={i} style={{
+                  padding: '3px 14px',
+                  color: logColor[log.type] || '#d4d4d4',
+                  borderBottom: '1px solid #111',
+                  borderLeft: `3px solid ${log.type === 'error' ? '#f87171' : log.type === 'warn' ? '#fbbf24' : 'transparent'}`,
+                  whiteSpace: 'pre-wrap',
+                  wordBreak: 'break-all',
+                }}>
+                  {log.type === 'warn' ? '⚠ ' : log.type === 'error' ? '✖ ' : '› '}
                   {log.text}
                 </div>
               ))}
+              {logs.length === 0 && (
+                <div style={{ padding: '10px 14px', color: '#4b5563', fontStyle: 'italic', fontSize: 12 }}>No output yet. Click ▶ Run.</div>
+              )}
             </div>
-          )}
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div style={{ display: 'flex', width: '100%', height: '100%', overflow: 'hidden' }}>
-      {/* Code Editor */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', borderRight: '1px solid #2d2d2d', minWidth: 0 }}>
-        <div style={HDR}>
-          <span>Code Editor — JavaScript</span>
-          <button
-            style={runBtnStyle(running ? '#15803d' : '#16a34a')}
-            onClick={runCode}
-            disabled={running}
-          >
-            {running ? '⏳ Running...' : '▶ Run'}
-          </button>
-        </div>
-        <textarea
-          value={code}
-          onChange={e => setCode(e.target.value)}
-          spellCheck={false}
-          style={{
-            flex: 1, background: '#1e1e1e', color: '#d4d4d4',
-            fontFamily: '"Fira Code", "Cascadia Code", "Consolas", monospace',
-            fontSize: 13, lineHeight: 1.6, padding: '12px 16px',
-            border: 'none', outline: 'none', resize: 'none',
-            tabSize: 2,
-          }}
-          onKeyDown={e => {
-            if (e.key === 'Tab') {
-              e.preventDefault();
-              const { selectionStart: s, selectionEnd: end } = e.target;
-              const newCode = code.substring(0, s) + '  ' + code.substring(end);
-              setCode(newCode);
-              requestAnimationFrame(() => { e.target.selectionStart = e.target.selectionEnd = s + 2; });
-            }
-          }}
-        />
-      </div>
-
-      {/* Console */}
-      <div style={{ width: '40%', minWidth: 300, display: 'flex', flexDirection: 'column', background: '#0d0d0d', flexShrink: 0 }}>
-        <div style={{ ...HDR, background: '#1a1a1a', borderBottom: '1px solid #000' }}>
-          <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#4ade80', boxShadow: '0 0 6px #4ade80', display: 'inline-block' }} />
-            Console Output
-          </span>
-          <button
-            onClick={() => setLogs([])}
-            style={{ background: 'none', border: 'none', color: '#6b7280', cursor: 'pointer', fontSize: 11, fontWeight: 600, padding: '2px 6px' }}
-          >
-            Clear
-          </button>
-        </div>
-        <div style={{ flex: 1, overflow: 'auto', padding: '8px 0', fontFamily: '"Fira Code", monospace', fontSize: 12 }}>
-          {logs.filter(l => l.type !== 'done').map((log, i) => (
-            <div key={i} style={{
-              padding: '3px 14px',
-              color: logColor[log.type] || '#d4d4d4',
-              borderBottom: '1px solid #111',
-              borderLeft: `3px solid ${log.type === 'error' ? '#f87171' : log.type === 'warn' ? '#fbbf24' : 'transparent'}`,
-              whiteSpace: 'pre-wrap',
-              wordBreak: 'break-all',
-            }}>
-              {log.type === 'warn' ? '⚠ ' : log.type === 'error' ? '✖ ' : '› '}
-              {log.text}
-            </div>
-          ))}
-          {logs.length === 0 && (
-            <div style={{ padding: '10px 14px', color: '#4b5563', fontStyle: 'italic', fontSize: 12 }}>No output yet. Click ▶ Run.</div>
-          )}
-        </div>
-      </div>
+          </div>
+        </Panel>
+      </PanelGroup>
     </div>
   );
 };
