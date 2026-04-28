@@ -204,7 +204,7 @@ const JSPlayground = () => {
     };
     handlerRef.current = handler;
     window.addEventListener('message', handler);
-    const srcdoc = \`<!DOCTYPE html><html><head><script>
+    const srcdoc = `<!DOCTYPE html><html><head><script>
 (function() {
   const levels = ['log','warn','error','info','debug'];
   levels.forEach(level => {
@@ -216,7 +216,8 @@ const JSPlayground = () => {
     };
   });
 })();
-<\/script></head><body><script type="module">\${code}\\nwindow.parent.postMessage({ __src: 'js-playground', level: 'done', args: '' }, '*');<\/script></body></html>\`;
+</script></head><body><script type="module">${code}
+window.parent.postMessage({ __src: 'js-playground', level: 'done', args: '' }, '*');</script></body></html>`;
     const iframe = document.createElement('iframe');
     iframe.style.display = 'none';
     iframe.sandbox = 'allow-scripts';
