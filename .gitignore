@@ -1,0 +1,37 @@
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Python/Virtual Environment (you have a myenv folder)
+myenv/
+__pycache__/
+*.pyc
+
+# Mac OS
+.DS_Store
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build directories
+frontend/dist/
+frontend/build/
+backend/build/
+
+# IDEs and Editors
+.idea/
+.vscode/
+*.swp
+*.swo
