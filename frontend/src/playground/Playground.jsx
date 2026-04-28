@@ -7,7 +7,7 @@ import {
   SandpackFileExplorer,
   useSandpack,
 } from '@codesandbox/sandpack-react';
-import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
+import { Panel, Group as PanelGroup, Separator as PanelResizeHandle } from 'react-resizable-panels';
 
 // ─── Default files ────────────────────────────────────────────────────────────
 const REACT_FILES = {
@@ -194,6 +194,7 @@ const JSPlayground = () => {
     setRunning(true);
     if (iframeRef.current) iframeRef.current.remove();
     if (handlerRef.current) window.removeEventListener('message', handlerRef.current);
+    
     const newLogs = [];
     const handler = (e) => {
       if (!e.data || e.data.__src !== 'js-playground') return;
@@ -204,6 +205,7 @@ const JSPlayground = () => {
     };
     handlerRef.current = handler;
     window.addEventListener('message', handler);
+    
     const srcdoc = `<!DOCTYPE html><html><head><script>
 (function() {
   const levels = ['log','warn','error','info','debug'];
@@ -216,14 +218,18 @@ const JSPlayground = () => {
     };
   });
 })();
-</script></head><body><script type="module">${code}
-window.parent.postMessage({ __src: 'js-playground', level: 'done', args: '' }, '*');</script></body></html>`;
+</s` + `cript></head><body><script type="module">
+${code}
+window.parent.postMessage({ __src: 'js-playground', level: 'done', args: '' }, '*');
+</s` + `cript></body></html>`;
+
     const iframe = document.createElement('iframe');
     iframe.style.display = 'none';
     iframe.sandbox = 'allow-scripts';
     iframe.srcdoc = srcdoc;
     document.body.appendChild(iframe);
     iframeRef.current = iframe;
+    
     setTimeout(() => { setRunning(false); }, 5000);
   };
 
@@ -232,7 +238,7 @@ window.parent.postMessage({ __src: 'js-playground', level: 'done', args: '' }, '
     if (handlerRef.current) window.removeEventListener('message', handlerRef.current);
   }, []);
 
-  const logColor = { log: '#d4d4d4', info: '#60a5fa', warn: '#fbbf24', error: '#f87171', debug: '#a78bfa' };
+  const logColor = { log: '#d4d4d4', info: '#60a5fa', warn: '#fbbf24', error: '#f87171', debug: '#a78bfa', done: 'transparent' };
 
   if (isMobile) {
     return (
@@ -241,16 +247,53 @@ window.parent.postMessage({ __src: 'js-playground', level: 'done', args: '' }, '
           <Panel defaultSize={60} minSize={20}>
             <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minWidth: 0 }}>
               <div style={{ ...HDR, background: '#1a1a1a', borderBottom: '1px solid #000' }}>
-                <span>Editor</span>
-                <button style={runBtnStyle(running ? '#15803d' : '#16a34a')} onClick={runCode} disabled={running}>{running ? '...' : '▶ Run'}</button>
+                <span>Code Editor — JavaScript</span>
+                <button
+                  style={runBtnStyle(running ? '#15803d' : '#16a34a')}
+                  onClick={runCode}
+                  disabled={running}
+                >
+                  {running ? '...' : '▶ Run'}
+                </button>
               </div>
-              <textarea value={code} onChange={e => setCode(e.target.value)} spellCheck={false} style={{ flex: 1, background: '#1e1e1e', color: '#d4d4d4', fontFamily: 'monospace', fontSize: 13, padding: 12, border: 'none', outline: 'none', resize: 'none' }} />
+              <textarea
+                value={code}
+                onChange={e => setCode(e.target.value)}
+                spellCheck={false}
+                style={{
+                  flex: 1, background: '#1e1e1e', color: '#d4d4d4',
+                  fontFamily: '"Fira Code", monospace',
+                  fontSize: 13, lineHeight: 1.6, padding: '12px',
+                  border: 'none', outline: 'none', resize: 'none',
+                }}
+              />
             </div>
           </Panel>
           <PanelResizeHandle style={{ height: 4, background: '#1a1a1a', cursor: 'row-resize' }} />
           <Panel defaultSize={40} minSize={20}>
-            <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#0d0d0d', overflow: 'auto', padding: 8, fontFamily: 'monospace', fontSize: 12 }}>
-              {logs.filter(l => l.type !== 'done').map((log, i) => <div key={i} style={{ color: logColor[log.type] || '#d4d4d4', padding: '2px 0' }}>{log.text}</div>)}
+            <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#0d0d0d', minWidth: 0 }}>
+              <div style={{ ...HDR, background: '#1a1a1a', borderBottom: '1px solid #000' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#4ade80', boxShadow: '0 0 6px #4ade80', display: 'inline-block' }} />
+                  Console Output
+                </span>
+                <button
+                  onClick={() => setLogs([])}
+                  style={{ background: 'none', border: 'none', color: '#6b7280', cursor: 'pointer', fontSize: 11, fontWeight: 600, padding: '2px 6px' }}
+                >
+                  Clear
+                </button>
+              </div>
+              <div style={{ flex: 1, overflow: 'auto', padding: '8px 0', fontFamily: '"Fira Code", monospace', fontSize: 12 }}>
+                {logs.filter(l => l.type !== 'done').map((log, i) => (
+                  <div key={i} style={{ padding: '3px 14px', color: logColor[log.type] || '#d4d4d4', borderBottom: '1px solid #111', whiteSpace: 'pre-wrap' }}>
+                    {log.text}
+                  </div>
+                ))}
+                {logs.length === 0 && (
+                  <div style={{ padding: '10px 14px', color: '#4b5563', fontStyle: 'italic', fontSize: 12 }}>No output yet. Click ▶ Run.</div>
+                )}
+              </div>
             </div>
           </Panel>
         </PanelGroup>
@@ -262,20 +305,72 @@ window.parent.postMessage({ __src: 'js-playground', level: 'done', args: '' }, '
     <div style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
       <PanelGroup direction="horizontal">
         <Panel defaultSize={60} minSize={20}>
-          <div style={{ display: 'flex', flexDirection: 'column', height: '100%', borderRight: '1px solid #2d2d2d' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', height: '100%', borderRight: '1px solid #2d2d2d', minWidth: 0 }}>
             <div style={HDR}>
-              <span>Code Editor</span>
-              <button style={runBtnStyle(running ? '#15803d' : '#16a34a')} onClick={runCode} disabled={running}>{running ? '⏳' : '▶ Run'}</button>
+              <span>Code Editor — JavaScript</span>
+              <button
+                style={runBtnStyle(running ? '#15803d' : '#16a34a')}
+                onClick={runCode}
+                disabled={running}
+              >
+                {running ? '⏳ Running...' : '▶ Run'}
+              </button>
             </div>
-            <textarea value={code} onChange={e => setCode(e.target.value)} spellCheck={false} style={{ flex: 1, background: '#1e1e1e', color: '#d4d4d4', fontFamily: 'monospace', fontSize: 13, padding: 16, border: 'none', outline: 'none', resize: 'none' }} />
+            <textarea
+              value={code}
+              onChange={e => setCode(e.target.value)}
+              spellCheck={false}
+              style={{
+                flex: 1, background: '#1e1e1e', color: '#d4d4d4',
+                fontFamily: '"Fira Code", "Cascadia Code", "Consolas", monospace',
+                fontSize: 13, lineHeight: 1.6, padding: '12px 16px',
+                border: 'none', outline: 'none', resize: 'none',
+                tabSize: 2,
+              }}
+              onKeyDown={e => {
+                if (e.key === 'Tab') {
+                  e.preventDefault();
+                  const { selectionStart: s, selectionEnd: end } = e.target;
+                  const newCode = code.substring(0, s) + '  ' + code.substring(end);
+                  setCode(newCode);
+                  requestAnimationFrame(() => { e.target.selectionStart = e.target.selectionEnd = s + 2; });
+                }
+              }}
+            />
           </div>
         </Panel>
         <PanelResizeHandle style={{ width: 4, background: '#1a1a1a', cursor: 'col-resize' }} />
         <Panel defaultSize={40} minSize={20}>
-          <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#0d0d0d' }}>
-            <div style={HDR}><span>Console Output</span></div>
-            <div style={{ flex: 1, overflow: 'auto', padding: 12, fontFamily: 'monospace', fontSize: 12 }}>
-              {logs.filter(l => l.type !== 'done').map((log, i) => <div key={i} style={{ color: logColor[log.type], padding: '2px 0' }}>{log.text}</div>)}
+          <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#0d0d0d', flexShrink: 0 }}>
+            <div style={{ ...HDR, background: '#1a1a1a', borderBottom: '1px solid #000' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#4ade80', boxShadow: '0 0 6px #4ade80', display: 'inline-block' }} />
+                Console Output
+              </span>
+              <button
+                onClick={() => setLogs([])}
+                style={{ background: 'none', border: 'none', color: '#6b7280', cursor: 'pointer', fontSize: 11, fontWeight: 600, padding: '2px 6px' }}
+              >
+                Clear
+              </button>
+            </div>
+            <div style={{ flex: 1, overflow: 'auto', padding: '8px 0', fontFamily: '"Fira Code", monospace', fontSize: 12 }}>
+              {logs.filter(l => l.type !== 'done').map((log, i) => (
+                <div key={i} style={{
+                  padding: '3px 14px',
+                  color: logColor[log.type] || '#d4d4d4',
+                  borderBottom: '1px solid #111',
+                  borderLeft: `3px solid ${log.type === 'error' ? '#f87171' : log.type === 'warn' ? '#fbbf24' : 'transparent'}`,
+                  whiteSpace: 'pre-wrap',
+                  wordBreak: 'break-all',
+                }}>
+                  {log.type === 'warn' ? '⚠ ' : log.type === 'error' ? '✖ ' : '› '}
+                  {log.text}
+                </div>
+              ))}
+              {logs.length === 0 && (
+                <div style={{ padding: '10px 14px', color: '#4b5563', fontStyle: 'italic', fontSize: 12 }}>No output yet. Click ▶ Run.</div>
+              )}
             </div>
           </div>
         </Panel>
@@ -287,6 +382,7 @@ window.parent.postMessage({ __src: 'js-playground', level: 'done', args: '' }, '
 // ─── Main Export ──────────────────────────────────────────────────────────────
 const Playground = ({ activeLang = 'react' }) => {
   useEffect(() => {
+    // Manual style injection for Sandpack
     const style = document.createElement('style');
     style.textContent = `
       .sp-wrapper { height: 100% !important; display: flex !important; flex-direction: column !important; }
@@ -297,19 +393,23 @@ const Playground = ({ activeLang = 'react' }) => {
   }, []);
 
   if (activeLang === 'javascript') {
-    return <div style={{ width: '100%', height: '100%', background: '#1e1e1e' }}><JSPlayground /></div>;
+    return (
+      <div style={{ width: '100%', height: '100%', overflow: 'hidden', background: '#1e1e1e' }}>
+        <JSPlayground />
+      </div>
+    );
   }
 
   return (
-    <div style={{ width: '100%', height: '100%', background: '#1e1e1e' }}>
+    <div style={{ width: '100%', height: '100%', overflow: 'hidden', background: '#1e1e1e' }}>
       <SandpackProvider
         key="react"
         template="react"
         theme="dark"
         files={REACT_FILES}
         customSetup={{ dependencies: { react: '^18.0.0', 'react-dom': '^18.0.0' } }}
-        options={{ autorun: false }}
-        style={{ width: '100%', height: '100%' }}
+        options={{ autorun: false, autoReload: false }}
+        style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}
       >
         <ReactLayout />
       </SandpackProvider>
