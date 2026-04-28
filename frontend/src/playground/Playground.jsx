@@ -84,7 +84,7 @@ const ReactLayout = () => {
   if (isMobile) {
     return (
       <div style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
-        <PanelGroup direction="vertical">
+        <PanelGroup orientation="vertical">
           <Panel defaultSize={60} minSize={20}>
             <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minWidth: 0 }}>
               <div style={HDR}>
@@ -96,7 +96,7 @@ const ReactLayout = () => {
               </div>
             </div>
           </Panel>
-          <PanelResizeHandle style={{ height: 4, background: '#1a1a1a', cursor: 'row-resize' }} />
+          <PanelResizeHandle style={{ height: 8, background: '#2d2d2d', cursor: 'row-resize', zIndex: 10 }} />
           <Panel defaultSize={40} minSize={20}>
             <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minWidth: 0 }}>
               <div style={{ ...HDR, background: '#1a1a1a' }}>
@@ -125,7 +125,7 @@ const ReactLayout = () => {
 
   return (
     <div style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
-      <PanelGroup direction="horizontal">
+      <PanelGroup orientation="horizontal">
         <Panel defaultSize={15} minSize={10} maxSize={30}>
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%', borderRight: '1px solid #2d2d2d', background: '#252526' }}>
             <div style={HDR}><span>Explorer</span></div>
@@ -134,7 +134,7 @@ const ReactLayout = () => {
             </div>
           </div>
         </Panel>
-        <PanelResizeHandle style={{ width: 4, background: '#1a1a1a', cursor: 'col-resize' }} />
+        <PanelResizeHandle style={{ width: 8, background: '#2d2d2d', cursor: 'col-resize', zIndex: 10 }} />
         <Panel defaultSize={45} minSize={20}>
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%', borderRight: '1px solid #2d2d2d', minWidth: 0 }}>
             <div style={HDR}>
@@ -146,10 +146,10 @@ const ReactLayout = () => {
             </div>
           </div>
         </Panel>
-        <PanelResizeHandle style={{ width: 4, background: '#1a1a1a', cursor: 'col-resize' }} />
+        <PanelResizeHandle style={{ width: 8, background: '#2d2d2d', cursor: 'col-resize', zIndex: 10 }} />
         <Panel defaultSize={40} minSize={20}>
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minWidth: 0 }}>
-            <PanelGroup direction="vertical">
+            <PanelGroup orientation="vertical">
               <Panel defaultSize={55} minSize={20}>
                 <div style={{ display: 'flex', flexDirection: 'column', height: '100%', borderBottom: '1px solid #2d2d2d', minHeight: 0 }}>
                   <div style={HDR}><span>Live Preview</span></div>
@@ -158,7 +158,7 @@ const ReactLayout = () => {
                   </div>
                 </div>
               </Panel>
-              <PanelResizeHandle style={{ height: 4, background: '#1a1a1a', cursor: 'row-resize' }} />
+              <PanelResizeHandle style={{ height: 8, background: '#2d2d2d', cursor: 'row-resize', zIndex: 10 }} />
               <Panel defaultSize={45} minSize={20}>
                 <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#0d0d0d', minHeight: 0 }}>
                   <div style={{ ...HDR, background: '#1a1a1a', borderBottom: '1px solid #000' }}>
@@ -243,7 +243,7 @@ window.parent.postMessage({ __src: 'js-playground', level: 'done', args: '' }, '
   if (isMobile) {
     return (
       <div style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
-        <PanelGroup direction="vertical">
+        <PanelGroup orientation="vertical">
           <Panel defaultSize={60} minSize={20}>
             <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minWidth: 0 }}>
               <div style={{ ...HDR, background: '#1a1a1a', borderBottom: '1px solid #000' }}>
@@ -269,7 +269,7 @@ window.parent.postMessage({ __src: 'js-playground', level: 'done', args: '' }, '
               />
             </div>
           </Panel>
-          <PanelResizeHandle style={{ height: 4, background: '#1a1a1a', cursor: 'row-resize' }} />
+          <PanelResizeHandle style={{ height: 8, background: '#2d2d2d', cursor: 'row-resize', zIndex: 10 }} />
           <Panel defaultSize={40} minSize={20}>
             <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#0d0d0d', minWidth: 0 }}>
               <div style={{ ...HDR, background: '#1a1a1a', borderBottom: '1px solid #000' }}>
@@ -303,7 +303,7 @@ window.parent.postMessage({ __src: 'js-playground', level: 'done', args: '' }, '
 
   return (
     <div style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
-      <PanelGroup direction="horizontal">
+      <PanelGroup orientation="horizontal">
         <Panel defaultSize={60} minSize={20}>
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%', borderRight: '1px solid #2d2d2d', minWidth: 0 }}>
             <div style={HDR}>
@@ -339,7 +339,7 @@ window.parent.postMessage({ __src: 'js-playground', level: 'done', args: '' }, '
             />
           </div>
         </Panel>
-        <PanelResizeHandle style={{ width: 4, background: '#1a1a1a', cursor: 'col-resize' }} />
+        <PanelResizeHandle style={{ width: 8, background: '#2d2d2d', cursor: 'col-resize', zIndex: 10 }} />
         <Panel defaultSize={40} minSize={20}>
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#0d0d0d', flexShrink: 0 }}>
             <div style={{ ...HDR, background: '#1a1a1a', borderBottom: '1px solid #000' }}>
@@ -408,7 +408,6 @@ const Playground = ({ activeLang = 'react' }) => {
         theme="dark"
         files={REACT_FILES}
         customSetup={{ dependencies: { react: '^18.0.0', 'react-dom': '^18.0.0' } }}
-        options={{ autorun: false, autoReload: false }}
         style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}
       >
         <ReactLayout />
