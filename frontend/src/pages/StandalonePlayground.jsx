@@ -22,6 +22,7 @@ const StandalonePlayground = () => {
 
   return (
     <div className="flex flex-col h-full bg-[#1e1e1e]">
+      <h1 style={{ color: 'white', position: 'fixed', top: 0, left: 0, zIndex: 999, background: 'red' }}>RENDERING STANDALONE</h1>
       {/* Header bar — fixed/sticky below navbar */}
       <div style={{
         position: 'fixed',

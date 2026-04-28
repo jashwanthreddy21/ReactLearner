@@ -9,60 +9,6 @@ import {
 } from '@codesandbox/sandpack-react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 
-// ─── Custom Resize Handle ─────────────────────────────────────────────────────
-const ResizeHandle = ({ direction = 'horizontal' }) => (
-  <PanelResizeHandle 
-    style={{
-      flex: '0 0 4px',
-      background: '#1a1a1a',
-      position: 'relative',
-      outline: 'none',
-      cursor: direction === 'horizontal' ? 'col-resize' : 'row-resize',
-      transition: 'background 0.2s',
-      zIndex: 10
-    }}
-  >
-    <div style={{
-      position: 'absolute',
-      inset: 0,
-      background: 'transparent',
-      transition: 'background 0.2s',
-    }} 
-    onMouseEnter={e => e.currentTarget.style.background = '#3b82f644'}
-    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-    />
-    <div style={{
-      position: 'absolute',
-      top: direction === 'horizontal' ? '50%' : '2px',
-      left: direction === 'horizontal' ? '2px' : '50%',
-      right: direction === 'horizontal' ? 'auto' : '2px',
-      bottom: direction === 'horizontal' ? 'auto' : '2px',
-      transform: direction === 'horizontal' ? 'translateY(-50%)' : 'translateX(-50%)',
-      width: direction === 'horizontal' ? '1px' : '30px',
-      height: direction === 'horizontal' ? '30px' : '1px',
-      background: '#334155',
-    }} />
-  </PanelResizeHandle>
-);
-
-// ─── Inject global CSS ────────────────────────────────────────────────────────
-function injectStyles() {
-  const id = 'sp-global-fix';
-  if (document.getElementById(id)) return;
-  const s = document.createElement('style');
-  s.id = id;
-  s.textContent = `
-    .sp-wrapper { height: 100% !important; min-height: 0 !important; display: flex !important; flex-direction: column !important; }
-    .sp-layout  { height: 100% !important; min-height: 0 !important; flex: 1 1 auto !important; }
-    .sp-file-explorer, .sp-code-editor, .sp-preview-container, .sp-console { height: 100% !important; min-height: 0 !important; }
-    .sp-cm { height: 100% !important; }
-    .cm-editor { height: 100% !important; }
-    .cm-scroller { height: 100% !important; overflow: auto !important; }
-    .sp-preview-iframe { height: 100% !important; }
-  `;
-  document.head.appendChild(s);
-}
-
 // ─── Default files ────────────────────────────────────────────────────────────
 const REACT_FILES = {
   '/App.js': `import React, { useState } from "react";
@@ -152,7 +98,7 @@ const ReactLayout = () => {
             </div>
           </Panel>
 
-          <ResizeHandle direction="vertical" />
+          <PanelResizeHandle style={{ height: 4, background: '#1a1a1a', cursor: 'row-resize' }} />
 
           {/* Preview / Console Toggle (Bottom) */}
           <Panel defaultSize={40} minSize={20}>
@@ -204,7 +150,7 @@ const ReactLayout = () => {
           </div>
         </Panel>
 
-        <ResizeHandle />
+        <PanelResizeHandle style={{ width: 4, background: '#1a1a1a', cursor: 'col-resize' }} />
 
         {/* Code Editor */}
         <Panel defaultSize={45} minSize={20}>
@@ -219,7 +165,7 @@ const ReactLayout = () => {
           </div>
         </Panel>
 
-        <ResizeHandle />
+        <PanelResizeHandle style={{ width: 4, background: '#1a1a1a', cursor: 'col-resize' }} />
 
         {/* Preview + Console */}
         <Panel defaultSize={40} minSize={20}>
@@ -234,7 +180,7 @@ const ReactLayout = () => {
                 </div>
               </Panel>
               
-              <ResizeHandle direction="vertical" />
+              <PanelResizeHandle style={{ height: 4, background: '#1a1a1a', cursor: 'row-resize' }} />
 
               <Panel defaultSize={45} minSize={20}>
                 <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#0d0d0d', minHeight: 0 }}>
@@ -370,7 +316,7 @@ window.parent.postMessage({ __src: 'js-playground', level: 'done', args: '' }, '
             </div>
           </Panel>
 
-          <ResizeHandle direction="vertical" />
+          <PanelResizeHandle style={{ height: 4, background: '#1a1a1a', cursor: 'row-resize' }} />
 
           {/* Console Panel */}
           <Panel defaultSize={40} minSize={20}>
@@ -444,7 +390,7 @@ window.parent.postMessage({ __src: 'js-playground', level: 'done', args: '' }, '
           </div>
         </Panel>
 
-        <ResizeHandle />
+        <PanelResizeHandle style={{ width: 4, background: '#1a1a1a', cursor: 'col-resize' }} />
 
         {/* Console */}
         <Panel defaultSize={40} minSize={20}>
@@ -488,7 +434,16 @@ window.parent.postMessage({ __src: 'js-playground', level: 'done', args: '' }, '
 
 // ─── Main Export ──────────────────────────────────────────────────────────────
 const Playground = ({ activeLang = 'react' }) => {
-  useEffect(() => { injectStyles(); }, []);
+  useEffect(() => { 
+    // Manual style injection for Sandpack if needed
+    const style = document.createElement('style');
+    style.textContent = `
+      .sp-wrapper { height: 100% !important; display: flex !important; flex-direction: column !important; }
+      .sp-layout { height: 100% !important; flex: 1 1 auto !important; }
+    `;
+    document.head.appendChild(style);
+    return () => style.remove();
+  }, []);
 
   if (activeLang === 'javascript') {
     return (
