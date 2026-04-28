@@ -94,61 +94,117 @@ const ReactRunButton = () => {
 };
 
 // ─── React Playground Layout ──────────────────────────────────────────────────
-const ReactLayout = () => (
-  <div style={{ display: 'flex', width: '100%', height: '100%', overflow: 'hidden' }}>
-    {/* File Explorer */}
-    <div style={{ width: 170, display: 'flex', flexDirection: 'column', borderRight: '1px solid #2d2d2d', background: '#252526', flexShrink: 0 }}>
-      <div style={HDR}><span>Explorer</span></div>
-      <div style={{ flex: 1, overflow: 'auto' }}>
-        <SandpackFileExplorer autoHiddenFiles />
-      </div>
-    </div>
+const ReactLayout = () => {
+  const [isMobile] = useState(window.innerWidth < 768);
+  const [activeView, setActiveView] = useState('preview'); // 'preview' or 'console'
 
-    {/* Code Editor */}
-    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', borderRight: '1px solid #2d2d2d', minWidth: 0 }}>
-      <div style={HDR}>
-        <span>Code Editor — React</span>
-        <ReactRunButton />
-      </div>
-      <div style={{ flex: 1, overflow: 'hidden' }}>
-        <SandpackCodeEditor showLineNumbers showTabs closableTabs showInlineErrors wrapContent style={{ height: '100%' }} />
-      </div>
-    </div>
+  if (isMobile) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%', overflow: 'hidden' }}>
+        {/* Code Editor (Top half) */}
+        <div style={{ flex: '0 0 60%', display: 'flex', flexDirection: 'column', borderBottom: '1px solid #2d2d2d', minWidth: 0 }}>
+          <div style={HDR}>
+            <span>Code Editor</span>
+            <ReactRunButton />
+          </div>
+          <div style={{ flex: 1, overflow: 'hidden' }}>
+            <SandpackCodeEditor showLineNumbers showTabs closableTabs showInlineErrors wrapContent style={{ height: '100%' }} />
+          </div>
+        </div>
 
-    {/* Preview + Console */}
-    <div style={{ width: '38%', minWidth: 280, display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
-      <div style={{ flex: '0 0 55%', display: 'flex', flexDirection: 'column', borderBottom: '1px solid #2d2d2d', minHeight: 0 }}>
-        <div style={HDR}><span>Live Preview</span></div>
-        <div style={{ flex: 1, overflow: 'hidden', background: '#fff' }}>
-          <SandpackPreview showNavigator={false} showRefreshButton showOpenInCodeSandbox={false} style={{ height: '100%' }} />
+        {/* Preview / Console Toggle (Bottom half) */}
+        <div style={{ flex: '0 0 40%', display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+          <div style={{ ...HDR, background: '#1a1a1a' }}>
+            <div style={{ display: 'flex', gap: 12 }}>
+              <button 
+                onClick={() => setActiveView('preview')}
+                style={{ background: 'none', border: 'none', color: activeView === 'preview' ? '#00ffcc' : '#666', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}
+              >
+                LIVE PREVIEW
+              </button>
+              <button 
+                onClick={() => setActiveView('console')}
+                style={{ background: 'none', border: 'none', color: activeView === 'console' ? '#00ffcc' : '#666', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}
+              >
+                CONSOLE
+              </button>
+            </div>
+          </div>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+            {activeView === 'preview' ? (
+              <div style={{ flex: 1, overflow: 'hidden', background: '#fff' }}>
+                <SandpackPreview showNavigator={false} showRefreshButton showOpenInCodeSandbox={false} style={{ height: '100%' }} />
+              </div>
+            ) : (
+              <div style={{ flex: 1, overflow: 'hidden', background: '#0d0d0d' }}>
+                <SandpackConsole showHeader={false} style={{ height: '100%', background: '#0d0d0d' }} />
+              </div>
+            )}
+          </div>
         </div>
       </div>
-      <div style={{ flex: '0 0 45%', display: 'flex', flexDirection: 'column', background: '#0d0d0d', minHeight: 0 }}>
-        <div style={{ ...HDR, background: '#1a1a1a', borderBottom: '1px solid #000' }}>
-          <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#4ade80', boxShadow: '0 0 6px #4ade80', display: 'inline-block' }} />
-            Console Output
-          </span>
+    );
+  }
+
+  return (
+    <div style={{ display: 'flex', width: '100%', height: '100%', overflow: 'hidden' }}>
+      {/* File Explorer */}
+      <div style={{ width: 170, display: 'flex', flexDirection: 'column', borderRight: '1px solid #2d2d2d', background: '#252526', flexShrink: 0 }}>
+        <div style={HDR}><span>Explorer</span></div>
+        <div style={{ flex: 1, overflow: 'auto' }}>
+          <SandpackFileExplorer autoHiddenFiles />
+        </div>
+      </div>
+
+      {/* Code Editor */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', borderRight: '1px solid #2d2d2d', minWidth: 0 }}>
+        <div style={HDR}>
+          <span>Code Editor — React</span>
+          <ReactRunButton />
         </div>
         <div style={{ flex: 1, overflow: 'hidden' }}>
-          <SandpackConsole showHeader={false} style={{ height: '100%', background: '#0d0d0d' }} />
+          <SandpackCodeEditor showLineNumbers showTabs closableTabs showInlineErrors wrapContent style={{ height: '100%' }} />
+        </div>
+      </div>
+
+      {/* Preview + Console */}
+      <div style={{ width: '38%', minWidth: 280, display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
+        <div style={{ flex: '0 0 55%', display: 'flex', flexDirection: 'column', borderBottom: '1px solid #2d2d2d', minHeight: 0 }}>
+          <div style={HDR}><span>Live Preview</span></div>
+          <div style={{ flex: 1, overflow: 'hidden', background: '#fff' }}>
+            <SandpackPreview showNavigator={false} showRefreshButton showOpenInCodeSandbox={false} style={{ height: '100%' }} />
+          </div>
+        </div>
+        <div style={{ flex: '0 0 45%', display: 'flex', flexDirection: 'column', background: '#0d0d0d', minHeight: 0 }}>
+          <div style={{ ...HDR, background: '#1a1a1a', borderBottom: '1px solid #000' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#4ade80', boxShadow: '0 0 6px #4ade80', display: 'inline-block' }} />
+              Console Output
+            </span>
+          </div>
+          <div style={{ flex: 1, overflow: 'hidden' }}>
+            <SandpackConsole showHeader={false} style={{ height: '100%', background: '#0d0d0d' }} />
+          </div>
         </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 // ─── JavaScript Custom Playground (no Sandpack runtime needed) ────────────────
 const JSPlayground = () => {
   const [code, setCode] = useState(DEFAULT_JS_CODE);
   const [logs, setLogs] = useState([{ type: 'info', text: 'Click ▶ Run to execute your code.' }]);
   const [running, setRunning] = useState(false);
+  const [isMobile] = useState(window.innerWidth < 768);
+  const [activeView, setActiveView] = useState('editor'); // 'editor' or 'console'
   const iframeRef = useRef(null);
   const handlerRef = useRef(null);
 
   const runCode = () => {
     setLogs([]);
     setRunning(true);
+    if (isMobile) setActiveView('console');
 
     // Remove previous iframe
     if (iframeRef.current) iframeRef.current.remove();
@@ -217,9 +273,63 @@ window.parent.postMessage({ __src: 'js-playground', level: 'done', args: '' }, '
 
   const logColor = { log: '#d4d4d4', info: '#60a5fa', warn: '#fbbf24', error: '#f87171', debug: '#a78bfa', done: 'transparent' };
 
+  if (isMobile) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%', overflow: 'hidden' }}>
+        <div style={{ ...HDR, background: '#1a1a1a', borderBottom: '1px solid #000' }}>
+          <div style={{ display: 'flex', gap: 12 }}>
+            <button 
+              onClick={() => setActiveView('editor')}
+              style={{ background: 'none', border: 'none', color: activeView === 'editor' ? '#00ffcc' : '#666', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}
+            >
+              CODE
+            </button>
+            <button 
+              onClick={() => setActiveView('console')}
+              style={{ background: 'none', border: 'none', color: activeView === 'console' ? '#00ffcc' : '#666', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}
+            >
+              CONSOLE
+            </button>
+          </div>
+          <button
+            style={runBtnStyle(running ? '#15803d' : '#16a34a')}
+            onClick={runCode}
+            disabled={running}
+          >
+            {running ? '...' : '▶ Run'}
+          </button>
+        </div>
+        
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          {activeView === 'editor' ? (
+            <textarea
+              value={code}
+              onChange={e => setCode(e.target.value)}
+              spellCheck={false}
+              style={{
+                flex: 1, background: '#1e1e1e', color: '#d4d4d4',
+                fontFamily: '"Fira Code", monospace',
+                fontSize: 13, lineHeight: 1.6, padding: '12px',
+                border: 'none', outline: 'none', resize: 'none',
+              }}
+            />
+          ) : (
+            <div style={{ flex: 1, overflow: 'auto', background: '#0d0d0d', padding: '8px 0', fontFamily: '"Fira Code", monospace', fontSize: 12 }}>
+              {logs.filter(l => l.type !== 'done').map((log, i) => (
+                <div key={i} style={{ padding: '3px 14px', color: logColor[log.type] || '#d4d4d4', borderBottom: '1px solid #111', whiteSpace: 'pre-wrap' }}>
+                  {log.text}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div style={{ display: 'flex', width: '100%', height: '100%', overflow: 'hidden' }}>
-      {/* Code Editor (plain textarea with monospace font) */}
+      {/* Code Editor */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', borderRight: '1px solid #2d2d2d', minWidth: 0 }}>
         <div style={HDR}>
           <span>Code Editor — JavaScript</span>

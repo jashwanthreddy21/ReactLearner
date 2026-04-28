@@ -9,10 +9,10 @@ const Home = () => {
         <div className="mb-8 inline-block p-4 rounded-2xl bg-gradient-to-tr from-brand-600/20 to-purple-600/20 ring-1 ring-white/10 backdrop-blur-xl">
           <Code2 className="w-16 h-16 text-brand-500" />
         </div>
-        <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-brand-400 to-purple-400">
+        <h1 className="text-4xl md:text-7xl font-extrabold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-brand-400 to-purple-400">
           Master React Step-by-Step
         </h1>
-        <p className="text-xl text-slate-400 mb-10 max-w-2xl mx-auto leading-relaxed">
+        <p className="text-lg md:text-xl text-slate-400 mb-10 max-w-2xl mx-auto leading-relaxed">
           Go from beginner to advanced with interactive modules and a real-time VS Code-like playground. Learn by doing.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
