@@ -15,7 +15,7 @@ const forceSeed = async () => {
     
     await Module.insertMany(modules);
     
-    console.log('Force seeded 10 modules successfully!');
+    console.log(`Force seeded ${modules.length} modules successfully!`);
     process.exit();
   } catch (error) {
     console.error('Error seeding:', error);

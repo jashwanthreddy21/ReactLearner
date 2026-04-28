@@ -13,9 +13,9 @@ function App() {
   
   return (
     <Router>
-      <div className="min-h-screen flex flex-col bg-slate-900 text-slate-50 font-sans">
+      <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: '#0f172a', color: '#f8fafc' }}>
         <Navbar />
-        <main className="flex-grow flex flex-col">
+        <main className="flex-grow flex flex-col min-h-0">
           <Routes>
             <Route path="/" element={user ? <Navigate to="/dashboard" /> : <Navigate to="/login" />} />
             <Route path="/login" element={<Login />} />

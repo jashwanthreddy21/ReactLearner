@@ -18,6 +18,10 @@ const protect = async (req, res, next) => {
       // Get user from the token
       req.user = await User.findById(decoded.id).select('-password');
 
+      if (!req.user) {
+        return res.status(401).json({ message: 'User deleted or database reset. Please log in again.' });
+      }
+
       next();
     } catch (error) {
       console.error(error);

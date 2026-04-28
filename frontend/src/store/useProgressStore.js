@@ -37,6 +37,15 @@ const useProgressStore = create((set, get) => ({
     const { user, updateUser } = useAuthStore.getState();
     if (!user) return;
 
+    // Optimistically update local state so Dashboard unlocks the next module instantly
+    const currentCompleted = user.completedModules || [];
+    if (!currentCompleted.includes(id)) {
+      updateUser({
+        ...user,
+        completedModules: [...currentCompleted, id]
+      });
+    }
+
     try {
       const config = {
         headers: {
@@ -44,17 +53,8 @@ const useProgressStore = create((set, get) => ({
         },
       };
       await axios.post(API_URL + id + '/complete', {}, config);
-      
-      // Update local state so Dashboard unlocks the next module instantly
-      const currentCompleted = user.completedModules || [];
-      if (!currentCompleted.includes(id)) {
-        updateUser({
-          ...user,
-          completedModules: [...currentCompleted, id]
-        });
-      }
     } catch (error) {
-      console.error('Error completing module', error);
+      console.error('Error completing module on backend. You may need to log in again if the memory database reset.', error);
     }
   }
 }));
