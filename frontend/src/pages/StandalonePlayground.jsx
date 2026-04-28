@@ -150,7 +150,5 @@ const StandalonePlayground = () => {
     </div>
   );
 };
-  );
-};
 
 export default StandalonePlayground;
